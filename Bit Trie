@@ -1,0 +1,58 @@
+const int N = 1e6+10, A = 31;
+int to[N * A][2], cnt[N * A] , tot = 1;
+
+
+void add(ll n){
+    ll u = 1;
+    cnt[u]++;
+    for(ll i = A-1; i >=0; i--){
+        ll bit = (n >> i) & 1;
+        if(!to[u][bit]){
+            to[u][bit] = ++tot;
+        }
+        u = to[u][bit];
+        cnt[u]++;
+    }
+}
+
+ll get(ll x, ll t){
+    ll sum = 0, u = 1, xo = 0;
+    for(ll i = A-1; i >= 0; i--){
+        ll bit = (t >> i) & 1;
+        if(xo + (1 << i) >= x){
+            sum += cnt[to[u][!bit]];
+            u = to[u][bit];
+        }
+        else{
+            if(!to[u][!bit]) return sum;
+            else{
+                u = to[u][!bit];
+                xo += (1 << i);
+            }
+        }
+    }
+    if(xo >= x) sum += cnt[u];
+    return sum;
+
+}
+
+
+
+
+void solve(){
+
+    ll n , x;
+    cin >> n >> x;
+    ll s = 0;
+    add(0);
+    ll ans = 0;
+    for(ll i = 0; i < n; i++){
+        ll q;
+        cin >> q;
+        s ^= q;
+        add(s);
+        ans += get(x, s);
+    }
+    cout << ans << endl;
+    
+}
