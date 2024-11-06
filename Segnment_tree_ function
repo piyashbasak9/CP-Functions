@@ -1,4 +1,4 @@
-int tree[200001*3];
+int tree[200001*4];
  
 void store(int node , int l, int r){
     if(l==r){
