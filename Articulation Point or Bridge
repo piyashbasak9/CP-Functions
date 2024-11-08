@@ -5,6 +5,7 @@ int V, E, timeCount;
 vector<vector<int>> adj;
 vector<int> disc, low;
 vector<bool> visited;
+set<int> articulationPoints;
 vector<pair<int, int>> bridges;
 
 void dfs(int u, int parent) {
@@ -17,9 +18,10 @@ void dfs(int u, int parent) {
             children++;
             dfs(v, u);
             low[u] = min(low[u], low[v]);
+            if (parent == -1 && children > 1) articulationPoints.insert(u);
+            if (parent != -1 && low[v] >= disc[u]) articulationPoints.insert(u);
             if (low[v] > disc[u]) bridges.push_back({u, v});
-        } 
-        else if (v != parent) {
+        } else if (v != parent) {
             low[u] = min(low[u], disc[v]);
         }
     }
@@ -30,7 +32,9 @@ void findArticulationPointsAndBridges() {
     for (int i = 0; i < V; i++) {
         if (!visited[i]) dfs(i, -1);
     }
-    cout << "Bridges:\n";
+    cout << "Articulation Points:\n";
+    for (int point : articulationPoints) cout << point << " ";
+    cout << "\nBridges:\n";
     for (auto bridge : bridges) cout << bridge.first << " - " << bridge.second << "\n";
 }
 
@@ -52,3 +56,4 @@ int main() {
 
     return 0;
 }
+
