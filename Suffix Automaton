@@ -1,3 +1,4 @@
+// problem link : https://cses.fi/alon/task/2103
 const int N = 2e6+10; // 2x size taken
 int len[N], lnk[N]{-1}, cnt[N];
 int last, sz = 1;
