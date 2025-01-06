@@ -4,7 +4,7 @@ struct info{
         lagy = 0;
         sum = 0;
     }
-} tree[N];
+} tree[N * 4];
 
 void push(int node, int l, int r){
     if(tree[node].lagy != 0){
