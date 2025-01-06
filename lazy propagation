@@ -1,55 +1,86 @@
-const int N = 4e5+10;
 struct info{
-    ll prop, sum;
+    ll lagy, sum;
+    info(){
+        lagy = 0;
+        sum = 0;
+    }
 } tree[N];
 
-void update(int node, int l, int r, int i, int j, ll x){
-    if(r < i || j < l){
-        return;
+void push(int node, int l, int r){
+    if(tree[node].lagy != 0){
+        tree[node].sum += (r-l+1) * tree[node].lagy;
+        if(l != r){
+            int left = node * 2 , right = left + 1;
+
+            tree[left].lagy += tree[node].lagy;
+            tree[right].lagy += tree[node].lagy; 
+        }
+        tree[node].lagy = 0;
     }
-    if(l >= i && r <=j){
-        tree[node].sum += (r-l+1) * x;
-        tree[node].prop += x;
-        return;
-    }
-    int left = node * 2;
-    int right = (node * 2) +1;
-    int mid = (l + r) / 2;
-    update(left, l , mid, i , j , x);
-    update(right, mid+1, r , i , j , x);
-    tree[node].sum = tree[left].sum + tree[right].sum + (r-l+1)* tree[node].prop;
 }
 
-ll query(int node, int l, int r, int i, int j, ll carry = 0){
+void store(int node , int l, int r){
+    if(l==r){
+        tree[node].sum = 0;
+        tree[node].lagy = 0;
+        return ;
+    }
+    int left=node*2;
+    int right=(node*2)+1;
+    int mid=(l+r)/2;
+    store(left,l,mid);
+    store(right,mid+1,r);
+    tree[node].sum = tree[left].sum + tree[right].sum;
+}
+
+void update(int node , int l , int r , int i, int j, ll val){
+    push(node, l , r);
     if(i > r || j < l){
+        return;
+    }
+    if(l >= i && r <= j){
+        tree[node].lagy += val;
+        push(node, l , r);
+        return;
+    }
+    int left = node*2;
+    int right = (node*2)+1;
+    int mid = (l + r) / 2;
+    update(left, l , mid, i, j, val);
+    update(right, mid+1, r, i, j, val);
+    tree[node].sum = tree[left].sum + tree[right].sum;
+}
+ 
+ll query(int node , int l, int r, int i , int j){
+    push(node, l , r);
+    if(l>=i && r<=j){
+        return tree[node].sum;
+    }
+    if(r<i || l>j){
         return 0;
     }
-    if(l >=i && r<=j){
-        return tree[node].sum + carry * (r-l+1);
-    }
-    int left = node * 2;
-    int right = (node * 2) +1;
-    int mid = (l + r) / 2;
-    int p1 = query(left, l , mid, i, j, carry + tree[node].prop);
-    int p2 = query(right, mid+1 , r, i, j, carry + tree[node].prop);
-    return p1 + p2;
+    int left=node*2;
+    int right=(node*2)+1;
+    int mid=(l+r)/2;
+    return query(left,l,mid,i,j) + query(right,mid+1,r,i,j);
 }
 
-
-
 void solve(){
-    int n, q;
-    cin >> n >> q;
-    while(q--){
-        int typ; cin >> typ;
+    cin >> n >> m;
+    store(1, 0, n-1);
+    for(int i = 0; i < m; i++){
+        int typ ; cin >> typ;
         if(typ == 1){
-            int l, r, x;
-            cin >> l >> r >> x;
-            update(1, 0, n-1, l, r-1, x);
+            ll l , r , val;
+            cin >> l >> r >> val;
+            r--;
+            update(1, 0, n-1, l , r , val);
         }
         else{
-            int ind; cin >> ind;
-            cout << query(1, 0, n-1, ind, ind) << endl;
+            ll x ; cin >> x;
+            cout <<  query(1, 0, n-1, x, x) << endl;
+
         }
     }
+    
 }
