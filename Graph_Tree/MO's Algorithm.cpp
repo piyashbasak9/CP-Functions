@@ -1,3 +1,6 @@
+//Mo’s Algorithm is an offline query processing technique used to efficiently answer range queries in O((N + Q) * sqrt(N)) time complexity. 
+//It is particularly useful when dealing with static array problems where updates are not required.
+
 #include<bits/stdc++.h>
 //#define int long long int
 #define ll long long
