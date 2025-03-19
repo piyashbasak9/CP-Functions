@@ -1,15 +1,10 @@
 //Mo’s Algorithm is an offline query processing technique used to efficiently answer range queries in O((N + Q) * sqrt(N)) time complexity. 
 //It is particularly useful when dealing with static array problems where updates are not required.
 
-#include<bits/stdc++.h>
-//#define int long long int
-#define ll long long
-#define mod 1000000007
-#define int_max 1e18
-
+#include <bits/stdc++.h>
 using namespace std;
 
-const int N = 2e5+10;
+const int N = 5e5 + 10;
 
 int n, q;
 int ar[N];
@@ -26,17 +21,17 @@ struct Query {
     }
 } query[N];
 
-map<int, int> mp;
+int freq[N];
+int distinct = 0;
 
 void add(int index) {
-    mp[ar[index]]++;
+    freq[ar[index]]++;
+    if (freq[ar[index]] == 1) distinct++;
 }
 
 void remove(int index) {
-    mp[ar[index]]--;
-    if (mp[ar[index]] == 0) {
-        mp.erase(ar[index]);
-    }
+    freq[ar[index]]--;
+    if (freq[ar[index]] == 0) distinct--;
 }
 
 vector<int> mo_algorithm() {
@@ -49,39 +44,33 @@ vector<int> mo_algorithm() {
         while (L < query[i].L) remove(L++);
         while (R > query[i].R) remove(R--);
         while (L > query[i].L) add(--L);
-        ans[query[i].index] = mp.size();
+        ans[query[i].index] = distinct;
     }
     return ans;
 }
 
 void solve() {
-    cin >> n >> q;
+    scanf("%d %d", &n, &q);
     for (int i = 0; i < n; i++) {
-        cin >> ar[i];
+        scanf("%d", &ar[i]);
     }
     
-    K = sqrt(n); // Block size
+    K = max(1, (int)sqrt(n));
     for (int i = 0; i < q; i++) {
         int l, r;
-        cin >> l >> r;
-        l--, r--;
+        scanf("%d %d", &l, &r);
+        l--, r--; 
         query[i] = {i, l, r};
     }
     
     vector<int> ans = mo_algorithm();
     for (int i = 0; i < q; i++) {
-        cout << ans[i] << endl;
+        printf("%d\n", ans[i]);
     }
 }
 
-int32_t main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    
-    ll t = 1;
-    // cin >> t;
-    while (t--) {
-        solve();
-    }
+int main() {
+    solve();
+    return 0;
 }
 
