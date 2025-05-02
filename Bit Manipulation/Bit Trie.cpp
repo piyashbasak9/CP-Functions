@@ -85,3 +85,61 @@ int32_t main()
         solve();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const int N = 2e5+5;
+const int IDX = 31;
+
+int trie[N * IDX][2], cnt[N * IDX], tot = 1, root;
+
+void init() {
+  cnt[tot] = 0;
+  root = tot;
+}
+
+void add(int x) {
+  int u = 1;
+  cnt[u]++;
+  for (int idx = IDX - 1; idx >= 0; --idx) {
+    int f = x >> idx & 1;
+    if (!trie[u][f])  trie[u][f] = ++tot;
+    u = trie[u][f];
+    cnt[u]++;
+  }
+}
+
+void rem(int x) {
+  int u = 1;
+  assert(cnt[u] > 0);
+  cnt[u]--;
+  for (int idx = IDX - 1; idx >= 0; --idx) {
+    int f = x >> idx & 1;
+    u = trie[u][f];
+    assert(cnt[u] > 0);
+    cnt[u]--;
+  }
+}
+
+int maxXor(int x) {
+  int u = 1, ret = 0;
+  assert(cnt[u] > 0);
+  for (int idx = IDX - 1; idx >= 0; --idx) {
+    int f = x >> idx & 1;
+    if (trie[u][!f])  ret |= 1 << idx, u = trie[u][!f];
+    else  u = trie[u][f];
+  }
+  return ret;
+}
+
