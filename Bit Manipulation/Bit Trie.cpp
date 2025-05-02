@@ -105,8 +105,13 @@ const int IDX = 31;
 int trie[N * IDX][2], cnt[N * IDX], tot = 1, root;
 
 void init() {
-  cnt[tot] = 0;
-  root = tot;
+    for(int i = 0; i <= tot + 15; i++){
+        trie[i][0] = trie[i][1] = 0;
+        cnt[i] = 0;
+    }
+    cnt[tot] = 0;
+    root = tot;
+    tot = 1;
 }
 
 void add(int x) {
