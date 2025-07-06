@@ -4,6 +4,6 @@ ll ncr(int n, int r){
     return fact[n] * ifact[n - r] % mod * ifact[r] % mod;
 }
 
-ll stars_and_bars(int stars, int bars){
-    return ncr(stars + bars, stars);
+ll stars_and_bars(int stars, int bars) {
+    return ncr(stars + bars, bars);  // Equivalent to ncr(stars + bars, stars)
 }
