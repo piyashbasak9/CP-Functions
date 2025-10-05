@@ -6,18 +6,18 @@ using namespace std;
 const int N = 2e5+5;
 
 vector<int> g[N];
-int tin[N], tout[N], flat[2*N];
+int start_time[N], end_time[N], flat[2*N], val[N];
 int timer = 0;
 
-void dfs(int u, int p) {
-    tin[u] = ++timer;
-    flat[timer] = u;
-    for(auto v : g[u]) {
+void dfs(int u, int p){
+    start_time[u] = timer;
+    flat[timer++] = val[u];
+    for(auto v : g[u]){
         if(v == p) continue;
         dfs(v, u);
     }
-    tout[u] = ++timer;
-    flat[timer] = u;
+    end_time[u] = timer;
+    flat[timer++] = val[u];
 }
 
 int32_t main(){
@@ -25,18 +25,20 @@ int32_t main(){
     cin.tie(0);
     
     int n; cin >> n;
+    for(int i=1;i<=n;i++) cin >> val[i];
     for(int i=1;i<n;i++){
         int u,v; cin >> u >> v;
         g[u].push_back(v);
         g[v].push_back(u);
     }
-    
+
     dfs(1,-1);
     
-    cout << "Euler Tour: ";
-    for(int i=1;i<=timer;i++) cout << flat[i] << " ";
+    cout << "Flat Euler Tour:" << endl;
+    for(int i=0;i<timer;i++) cout << flat[i] << " ";
     cout << endl;
 
-    cout << "In-Time / Out-Time:" << endl;
-    for(int i=1;i<=n;i++) cout << i << ": " << tin[i] << " " << tout[i] << endl;
+    cout << "Start / End Times:" << endl;
+    for(int i=1;i<=n;i++)
+        cout << i << ": " << start_time[i] << " " << end_time[i] << endl;
 }
