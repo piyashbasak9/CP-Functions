@@ -13,6 +13,7 @@ vector<int> lps(string $t){
 
 
 int kmp(string &s, string &t){
+	int n = s.length(), m = t.length();
 	auto pi = lps(t);
 	int ans = 0;
   for (int i = 0, j = 0; i < n; ++i) {
