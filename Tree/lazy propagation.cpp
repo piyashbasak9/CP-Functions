@@ -1,97 +1,55 @@
-#include<bits/stdc++.h>
-#define int long long int
-#define ll long long
- 
-using namespace std;
-int ts=1;
-// start journey
- 
-const int N = 2e5+10;
-int n, q;
-int ar[N];
- 
-struct info {
-    int sum;
-    int lazy_add;
-    int lazy_increment;
-} tree[N * 4];
- 
-void push(int node, int l, int r) {
-    if (tree[node].lazy_add || tree[node].lazy_increment) {
-        int len = r - l + 1;
-        tree[node].sum += tree[node].lazy_add * len + tree[node].lazy_increment * (len * (len - 1)) / 2;
- 
-        if (l != r) {
-            int mid = (l + r) / 2;
-            int left = node * 2, right = left + 1;
- 
-            tree[left].lazy_add += tree[node].lazy_add;
-            tree[left].lazy_increment += tree[node].lazy_increment;
- 
-            tree[right].lazy_add += tree[node].lazy_add + tree[node].lazy_increment * (mid - l + 1);
-            tree[right].lazy_increment += tree[node].lazy_increment;
-        }
- 
-        tree[node].lazy_add = 0;
-        tree[node].lazy_increment = 0;
+struct ST {
+  #define lc (n << 1)
+  #define rc ((n << 1) + 1)
+  long long t[4 * N], lazy[4 * N];
+  ST() {
+    memset(t, 0, sizeof t);
+    memset(lazy, 0, sizeof lazy);
+  }
+  inline void push(int n, int b, int e) { // change this
+    if (lazy[n] == 0) return;
+    t[n] = t[n] + lazy[n] * (e - b + 1);
+    if (b != e) {
+      lazy[lc] = lazy[lc] + lazy[n];
+      lazy[rc] = lazy[rc] + lazy[n];
     }
-}
- 
-void build(int node, int l, int r) {
-    if (l == r) {
-        tree[node].sum = ar[l];
-        return;
+    lazy[n] = 0;
+  }
+  inline long long combine(long long a,long long b) { // change this
+    return a + b;
+  }
+  inline void pull(int n) { // change this
+    t[n] = t[lc] + t[rc];
+  }
+  void build(int n, int b, int e) {
+    lazy[n] = 0; // change this
+    if (b == e) {
+      t[n] = a[b];
+      return;
     }
-    int mid = (l + r) / 2;
-    build(node * 2, l, mid);
-    build(node * 2 + 1, mid + 1, r);
-    tree[node].sum = tree[node * 2].sum + tree[node * 2 + 1].sum;
-}
- 
-void update(int node, int l, int r, int i, int j, int base) {
-    push(node, l, r);
-    if (i > r || j < l) return;
-    if (l >= i && r <= j) {
-        tree[node].lazy_add += base + (l - i);
-        tree[node].lazy_increment += 1;
-        push(node, l, r);
-        return;
+    int mid = (b + e) >> 1;
+    build(lc, b, mid);
+    build(rc, mid + 1, e);
+    pull(n);
+  }
+  void upd(int n, int b, int e, int i, int j, long long v) {
+    push(n, b, e);
+    if (j < b || e < i) return;
+    if (i <= b && e <= j) {
+      lazy[n] = v; //set lazy
+      push(n, b, e);
+      return;
     }
-    int mid = (l + r) / 2;
-    update(node * 2, l, mid, i, j, base);
-    update(node * 2 + 1, mid + 1, r, i, j, base);
-    tree[node].sum = tree[node * 2].sum + tree[node * 2 + 1].sum;
-}
- 
-int query(int node, int l, int r, int i, int j) {
-    push(node, l, r);
-    if (i > r || j < l) return 0;
-    if (l >= i && r <= j) return tree[node].sum;
-    int mid = (l + r) / 2;
-    return query(node * 2, l, mid, i, j) + query(node * 2 + 1, mid + 1, r, i, j);
-}
- 
-void solve() {
-    cin >> n >> q;
-    for (int i = 0; i < n; i++) {
-        cin >> ar[i];
-    }
-    build(1, 0, n - 1);
-    while (q--) {
-        int typ, l, r;
-        cin >> typ >> l >> r;
-        l--, r--;
-        if (typ == 1) {
-            update(1, 0, n - 1, l, r, 1);
-        } else {
-            cout << query(1, 0, n - 1, l, r) << endl;
-        }
-    }
-}
- 
-int32_t main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    solve();
-    return 0;
-}
+    int mid = (b + e) >> 1;
+    upd(lc, b, mid, i, j, v);
+    upd(rc, mid + 1, e, i, j, v);
+    pull(n);
+  }
+  long long query(int n, int b, int e, int i, int j) {
+    push(n, b, e);
+    if (i > e || b > j) return 0; //return null
+    if (i <= b && e <= j) return t[n];
+    int mid = (b + e) >> 1;
+    return combine(query(lc, b, mid, i, j), query(rc, mid + 1, e, i, j));
+  }
+}t;
