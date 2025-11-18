@@ -1,7 +1,7 @@
 const int N = 2e6+5;
 const int A = 26;
 
-int trie[N * A][2], pc[N], wc[N], tot = 1, root;
+int trie[N * A][2], pc[N * A], wc[N * A], tot = 1, root;
 
 void init() {
   pc[tot] = wc[tot] = 0;
