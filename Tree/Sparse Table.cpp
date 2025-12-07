@@ -1,29 +1,40 @@
-int sparse[200010][20];
+ll merge(ll a, ll b) {
+    return min(a, b);
+}
 
+void build_sparse_table(const vector<ll>& arr) {
+    N = arr.size();
+    if (N == 0) return;
 
-void store(int ar[], int n){
-    for(int i=0; i<n; i++){
-        sparse[i][0]=ar[i];
+    K = floor(log2(N));
+    st.assign(N, vector<ll>(K + 1));
+
+    for (int i = 0; i < N; ++i) {
+        st[i][0] = arr[i];
     }
-    int l=1,r=n-1;
-    for(int i=1; i<=n; i*=2){
-        for(int j=0; (j+i)<=r; j++){
-            sparse[j][l]=__gcd(sparse[j][l-1] , sparse[j+i][l-1]);
+
+    for (int j = 1; j <= K; ++j) {
+        for (int i = 0; i + (1 << j) <= N; ++i) {
+            st[i][j] = merge(st[i][j-1], st[i + (1 << (j-1))][j-1]);
         }
-        r-=i,l++;
+    }
+
+    log_table.assign(N + 1, 0);
+    for (int i = 2; i <= N; ++i) {
+        log_table[i] = log_table[i / 2] + 1;
     }
 }
 
-int find_range(int l, int r){
-    int x=(r-l+1);
-    int bit=0,bit_val=1,ans=0;
-    while(x>0){
-        if(x&1){
-            ans=__gcd(ans,sparse[l][bit]);
-            l+=bit_val;
-        }
-        bit++,bit_val*=2;
-        x>>=1;
+ll query_rmq(int L, int R) {
+    if (L < 0 || R >= N || L > R) {
+        return 2e18;
     }
-    return ans;
+
+    int len = R - L + 1;
+    int p = log_table[len];
+    
+    ll val1 = st[L][p];
+    ll val2 = st[R - (1 << p) + 1][p];
+    
+    return merge(val1, val2);
 }
