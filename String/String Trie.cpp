@@ -1,50 +1,49 @@
-const int N = 2e6+5;
-const int A = 26;
+#include <bits/stdc++.h>
+using namespace std;
 
-int trie[N * A][2], pc[N * A], wc[N * A], tot = 1, root;
+#define int long long int
 
-void init() {
-  pc[tot] = wc[tot] = 0;
-  root = tot;
-}
+const int N = 2e6 + 5;
+int trie[N][26], pc[N], tot = 0;
 
 void add(string &s) {
-  int u = root;
-  pc[u]++;
-  for (auto c: s) {
-    int f = c - 'a';
-    if (!trie[u][f])  trie[u][f] = ++tot;
-    u = trie[u][f];
-    pc[u]++;
-  }
-  wc[u]++;
+    int u = 0;
+    for (auto c : s) {
+        int f = c - 'a';
+        if (!trie[u][f]) trie[u][f] = ++tot;
+        u = trie[u][f];
+        pc[u]++;
+    }
 }
 
-int prefCount(string &s) {
-  int u = root, ret = 0;
-  for (auto c: s) {
-    int f = c - 'a';
-    if (!trie[u][f])  return 0;
-    u = trie[u][f];
-  }
-  return pc[u];
+int query(string &s) {
+    int u = 0;
+    for (auto c : s) {
+        int f = c - 'a';
+        if (!trie[u][f]) return 0;
+        u = trie[u][f];
+    }
+    return pc[u];
 }
 
-
-
-
-void solve(){
-    ll n , m ;
+void solve() {
+    int n, m;
     cin >> n >> m;
-    for(ll i = 0; i < n; i++){
-        string ch;
-        cin >> ch;
-        add(ch);
+    for (int i = 0; i < n; i++) {
+        string s;
+        cin >> s;
+        add(s);
     }
-    for(ll i = 0; i < m; i++){
-        string ch;
-        cin >> ch;
-        cout << prefCount(ch) << endl;
+    for (int i = 0; i < m; i++) {
+        string s;
+        cin >> s;
+        cout << query(s) << "\n";
     }
+}
 
+signed main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    solve();
+    return 0;
 }
