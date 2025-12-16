@@ -1,42 +1,53 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
+#define int long long int
+#define ll long long
 
-int dp[10][90][90][2];
-string num;
-int c;
+const int mod = 1000000007;
+const int N = 1e4+10;
 
-int fun(int pos, int digSum, int dig, int smaint) {
-    if (pos == num.size()) {
-        if (dig == 0 && digSum == 0) return 1;
-        return 0;
-    }
-    
-    if (dp[pos][digSum][dig][smaint] != -1) 
-        return dp[pos][digSum][dig][smaint];
-    
-    int ans = 0;
-    int limit = num[pos] - '0';
-    if (smaint == 1) limit = 9;
-    
-    for (int i = 0; i <= limit; i++) {
-        int nsm = (i < limit) || smaint;
-        int ndigSum = (digSum + i) % c;
-        int ndig = (dig * 10 + i) % c;
-        ans += fun(pos + 1, ndigSum, ndig, nsm);
-    }
-    
-    return dp[pos][digSum][dig][smaint] = ans;
+string chl, chr;
+int k; 
+int dp[N][100][2][2];
+
+int f(int ind, int sum, int sw1, int sw2){
+  if(ind == chr.size()){
+    return sum == 0;
+  }
+  if(dp[ind][sum][sw1][sw2] != -1){
+    return dp[ind][sum][sw1][sw2];
+  }
+  int ans = 0;
+  int l = (sw1 == 0) ? chl[ind] - '0' : 0;
+  int r = (sw2 == 0) ? chr[ind] - '0' : 9;
+
+  for(int i = l; i <= r; i++){
+    int n_sw1 = (sw1 == 0 && i == l) ? 0 : 1;
+    int n_sw2 = (sw2 == 0 && i == r) ? 0 : 1;
+
+    ans += f(ind+1, (sum + i) % k, n_sw1, n_sw2);
+    ans %= mod;
+  }
+  return dp[ind][sum][sw1][sw2] = ans;
 }
 
-int solve(string n) {
-    num = n;
-    memset(dp, -1, sizeof(dp));
-    return fun(0, 0, 0, 0);
+void solve(){
+  cin >> chr >> k;
+  chl = "1";
+  while(chl.size() < chr.size()){
+    chl = "0" + chl;
+  }
+  memset(dp, -1, sizeof(dp));
+  int ans = f(0, 0, 0, 0) % mod;
+  cout << ans << endl;
 }
 
-int main() {
-    string n;
-    cin >> n >> c;
-    cout << solve(n) << endl;
-    return 0;
+int32_t main(){
+  ios_base::sync_with_stdio(0);
+  cin.tie(NULL);
+  ll t=1;
+  // cin >> t;
+  while(t--){
+    solve();
+  }
 }
