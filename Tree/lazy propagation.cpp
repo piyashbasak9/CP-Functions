@@ -1,3 +1,77 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+#define int long long
+const int N = 2e5 + 10;
+
+int n;
+int ar[N];
+int seg[4*N], lazy[4*N];
+
+void build(int ind, int l, int r){
+    if(l == r){
+        seg[ind] = ar[l];
+        return;
+    }
+    int mid = (l + r) / 2;
+    build(2*ind, l, mid);
+    build(2*ind+1, mid+1, r);
+    seg[ind] = seg[2*ind] + seg[2*ind+1];
+}
+
+void push(int ind, int l, int r){
+    if(lazy[ind] != 0){
+        seg[ind] += (r - l + 1) * lazy[ind];
+        
+        if(l != r){
+            lazy[2*ind] += lazy[ind];
+            lazy[2*ind+1] += lazy[ind];
+        }
+        lazy[ind] = 0;
+    }
+}
+
+void update(int ind, int l, int r, int ql, int qr, int val){
+    push(ind, l, r);
+
+    if(r < ql || l > qr) return;
+
+    if(l >= ql && r <= qr){
+        lazy[ind] += val;
+        push(ind, l, r);
+        return;
+    }
+
+    int mid = (l + r) / 2;
+    update(2*ind, l, mid, ql, qr, val);
+    update(2*ind+1, mid+1, r, ql, qr, val);
+
+    seg[ind] = seg[2*ind] + seg[2*ind+1];
+}
+
+int query(int ind, int l, int r, int ql, int qr){
+    push(ind, l, r);
+
+    if(r < ql || l > qr) return 0;
+
+    if(l >= ql && r <= qr){
+        return seg[ind];
+    }
+
+    int mid = (l + r) / 2;
+    return query(2*ind, l, mid, ql, qr) +
+           query(2*ind+1, mid+1, r, ql, qr);
+}
+
+
+
+
+
+
+
+
+
+
 struct ST {
   #define lc (n << 1)
   #define rc ((n << 1) + 1)
